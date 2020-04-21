@@ -9,20 +9,17 @@
         miro.onReady(() => {
             miro.initialize({
                 extensionPoints: {
-                    widgetContextMenu: async() => {
+                    getWidgetMenuItems: (widgets) => {
+
                         return {
                             title: 'can edit example',
                             svgIcon: icon,
-                            onClick: sayHi
+                            onClick: ()=>alert(JSON.stringify(widgets.map(w=>w.id)))
                         }
                     }
                 }
             })
         })
-
-        function sayHi() {
-            alert('42!')
-        }
     </script>
 </head>
 
