@@ -17,11 +17,11 @@
                             svgIcon: icon,
                             tooltip: 'Roll Selected',
                             onClick: () => {
-                                alert(JSON.stringify(widgets))
                                 return Promise.all(widgets.map(w => {
                                     miro.board.widgets.get({
                                         id: w.id
                                     }).then(widget => {
+                                        alert(JSON.stringify(Object.keys(w)));
                                         let newtxt = widget.plainText;
                                         [...widget.plainText.matchAll(/\*.*?\*/g)].map(match => {
                                             try {
