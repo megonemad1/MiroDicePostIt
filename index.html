@@ -9,7 +9,7 @@
         miro.onReady(() => {
             miro.initialize({
                 extensionPoints: {
-                    bottomBar: async() => {
+                    widgetContextMenu: async() => {
                         return {
                             title: 'can edit example',
                             svgIcon: icon,
