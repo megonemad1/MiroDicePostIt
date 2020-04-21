@@ -17,24 +17,26 @@
                             svgIcon: icon,
                             tooltip: 'Roll Selected',
                             onClick: () => {
-                                var promises = []
                                 alert(JSON.stringify(widgets))
-                                widgets.forEach(widget => {
-                                    let newtxt = widget.plainText;
-                                    [...widget.plainText.matchAll(/\*.*?\*/g)].map(match => {
-                                        try {
-                                            var r = roller.roll(match[0].split(':')[0])
-                                            newtxt = newtxt.replace(match[0], `*${r.output}*`)
-                                        } catch (error) {
-                                            newtxt = newtxt.replace(match[0], match[0].slice(1, -1))
-                                        }
-                                    });
-                                    promises.concat(miro.board.widgets.update({
-                                        id: widget.id,
-                                        text: newtxt
-                                    }))
-                                })
-                                return Promise.all(promises);
+                                return Promise.all(widgets.map(w => {
+                                    miro.board.widgets.get({
+                                        id: w.id
+                                    }).then(widget => {
+                                        let newtxt = widget.plainText;
+                                        [...widget.plainText.matchAll(/\*.*?\*/g)].map(match => {
+                                            try {
+                                                var r = roller.roll(match[0].split(':')[0])
+                                                newtxt = newtxt.replace(match[0], `*${r.output}*`)
+                                            } catch (error) {
+                                                newtxt = newtxt.replace(match[0], match[0].slice(1, -1))
+                                            }
+                                        });
+                                        return miro.board.widgets.update({
+                                            id: widget.id,
+                                            text: newtxt
+                                        });
+                                    })
+                                }));
                             }
                         };
                     }
