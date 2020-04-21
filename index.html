@@ -18,6 +18,7 @@
                             tooltip: 'Roll Selected',
                             onClick: () => {
                                 var promises = []
+                                alert(JSON.stringify(widgets))
                                 widgets.forEach(widget => {
                                     let newtxt = widget.plainText;
                                     [...widget.plainText.matchAll(/\*.*?\*/g)].map(match => {
