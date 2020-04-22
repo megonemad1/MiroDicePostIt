@@ -19,20 +19,14 @@
 
                             onClick: () => {
                                 
-                                return miro.board.widgets.update({
-                                            id: widgets[0].id,
-                                            text: JSON.stringify(widgets[0])
-                                        });
-                                /*
-
-                                
                                 return Promise.all(widgets.map(w => {
                                     miro.board.widgets.get({
                                         id: w.id
-                                    }).then(widget => {
-                                        alert(JSON.stringify(Object.keys(w)));
+                                    }).then(widget =>
+                                     {
+                                        widget=widget[0];
                                         let newtxt = widget.plainText;
-                                        [...widget.plainText.matchAll(/\*.*?\* /g)].map(match => {
+                                        [...widget.plainText.matchAll(/\*.*?\*/g)].map(match => {
                                             try {
                                                 var r = roller.roll(match[0].split(':')[0])
                                                 newtxt = newtxt.replace(match[0], `*${r.output}*`)
@@ -45,7 +39,7 @@
                                             text: newtxt
                                         });
                                     })
-                                }));*/
+                                }));
                             }
                         };
                     }
