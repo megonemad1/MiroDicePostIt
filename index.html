@@ -16,14 +16,23 @@
                             title: 'Dice Roller On PostIt Notes',
                             svgIcon: icon,
                             tooltip: 'Roll Selected',
+
                             onClick: () => {
+                                
+                                return miro.board.widgets.update({
+                                            id: widget.id,
+                                            text: "newtxt"
+                                        });
+                                /*
+
+                                
                                 return Promise.all(widgets.map(w => {
                                     miro.board.widgets.get({
                                         id: w.id
                                     }).then(widget => {
                                         alert(JSON.stringify(Object.keys(w)));
                                         let newtxt = widget.plainText;
-                                        [...widget.plainText.matchAll(/\*.*?\*/g)].map(match => {
+                                        [...widget.plainText.matchAll(/\*.*?\* /g)].map(match => {
                                             try {
                                                 var r = roller.roll(match[0].split(':')[0])
                                                 newtxt = newtxt.replace(match[0], `*${r.output}*`)
@@ -36,7 +45,7 @@
                                             text: newtxt
                                         });
                                     })
-                                }));
+                                }));*/
                             }
                         };
                     }
