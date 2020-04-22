@@ -24,14 +24,14 @@
                                         id: w.id
                                     }).then(widget => {
                                         widget = widget[0];
-                                        if (widget.type === "LINE") {
+                                        if (widget.type && widget.type === "LINE") {
                                             let end = widget.endPosition;
                                             let start = widget.startPosition;
                                             let dx = Math.abs(end.x - start.x);
                                             let dy = Math.abs(end.y - start.y);
                                             let dist = Math.max(dx, dy);
                                             return miro.showNotification(`${(dist*.05).toFixed(2)}sq, ${(dist*.25).toFixed(2)}ft`);
-                                        } else {
+                                        } else if (widget.plainText) {
                                             let newtxt = widget.plainText;
                                             [...widget.plainText.matchAll(/\*.*?\*/g)].map(match => {
                                                 try {
