@@ -29,7 +29,7 @@
                                             let start = widget.startPosition;
                                             let dx = end.x - start.x;
                                             let dy = end.y - start.y;
-                                            let dist= Math.SQRT2(dx*dx+dy*dy);
+                                            let dist= Math.sqrt(dx*dx+dy*dy);
                                             return miro.board.widgets.update({
                                                 id: widget.id,
                                                 text: `${dist/20}ft`
