@@ -18,26 +18,37 @@
                             tooltip: 'Roll Selected',
 
                             onClick: () => {
-                                
+
                                 return Promise.all(widgets.map(w => {
                                     miro.board.widgets.get({
                                         id: w.id
-                                    }).then(widget =>
-                                     {
-                                        widget=widget[0];
-                                        let newtxt = widget.plainText;
-                                        [...widget.plainText.matchAll(/\*.*?\*/g)].map(match => {
-                                            try {
-                                                var r = roller.roll(match[0].slice(1, -1).split(':')[0])
-                                                newtxt = newtxt.replace(match[0], `*${r.output}*`)
-                                            } catch (error) {
-                                                newtxt = newtxt.replace(match[0], match[0].slice(1, -1))
-                                            }
-                                        });
-                                        return miro.board.widgets.update({
-                                            id: widget.id,
-                                            text: newtxt
-                                        });
+                                    }).then(widget => {
+                                        widget = widget[0];
+                                        if (widget.type === "LINE") {
+                                            let end = widget.endPosition;
+                                            let start = widget.startPosition;
+                                            let dx = end.x - start.x;
+                                            let dy = end.y - start.y;
+                                            let dist= Math.SQRT2(dx*dx+dy*dy);
+                                            return miro.board.widgets.update({
+                                                id: widget.id,
+                                                text: `${dist/20}ft`
+                                            });
+                                        } else {
+                                            let newtxt = widget.plainText;
+                                            [...widget.plainText.matchAll(/\*.*?\*/g)].map(match => {
+                                                try {
+                                                    var r = roller.roll(match[0].slice(1, -1).split(':')[0])
+                                                    newtxt = newtxt.replace(match[0], `*${r.output}*`)
+                                                } catch (error) {
+                                                    newtxt = newtxt.replace(match[0], match[0].slice(1, -1))
+                                                }
+                                            });
+                                            return miro.board.widgets.update({
+                                                id: widget.id,
+                                                text: newtxt
+                                            });
+                                        }
                                     })
                                 }));
                             }
