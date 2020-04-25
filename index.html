@@ -60,7 +60,6 @@
                             tooltip: 'Roll Selected',
 
                             onClick: () => {
-                                miro.showNotification(`log`);
 
                                 let diceVars = widgets.reduce((vars, widget) => {
                                     if (widget.plainText) {
@@ -75,7 +74,6 @@
                                     }
                                 });
                                 let rollSum = 0;
-                                miro.showNotification(`log ${diceVars}`);
                                 const promices = widgets.map(widget => {
                                     metadata = widget.metadata[miro.getClientId()];
                                     if (widget.type && widget.type === "LINE") {
