@@ -38,9 +38,18 @@
                         title: 'Demo app button',
                         svgIcon: icon2,
                         onClick: () => {
-                            metadata={}
-                            metadata[miro.getClientId()]={diceRange:[1,2,3,4,5,6]};
-                            return miro.board.widgets.create({type: "SHAPE", style:{shapeType: 3}, text: '6', metadata:metadata});
+                            metadata = {}
+                            metadata[miro.getClientId()] = {
+                                diceRange: [1, 2, 3, 4, 5, 6]
+                            };
+                            return miro.board.widgets.create({
+                                type: "SHAPE",
+                                style: {
+                                    shapeType: 3
+                                },
+                                text: '6',
+                                metadata: metadata
+                            });
                         }
                     },
                     getWidgetMenuItems: (widgets) => {
@@ -52,11 +61,12 @@
 
                             onClick: () => {
                                 miro.showNotification(`log`);
-                                    
+
                                 let diceVars = widgets.reduce((vars, widget) => {
                                     if (widget.plainText) {
-                                        vars.push(...widget.plainText.matchAll(/(\w[\w\d]*)=(\d+(?:\.\d+)?)/g));
+                                        return [...vars, ...widget.plainText.matchAll(/(\w[\w\d]*)=(\d+(?:\.\d+)?)/g)];
                                     }
+                                    return vars;
                                 }, []).map(m => {
                                     return {
                                         key: m[1],
