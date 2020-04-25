@@ -28,7 +28,7 @@
                 return array[this.next(max = array.length)];
             }
         }
-        const sum = arr => arr.reduce((a, n) => a += parseFloat(n), 0);
+        const sum = arr => arr.reduce((a, n) => a + parseFloat(n), 0);
         var random = new Random();
 
         miro.onReady(() => {
