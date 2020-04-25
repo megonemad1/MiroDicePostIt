@@ -6,10 +6,43 @@
     <script src="https://cdn.jsdelivr.net/npm/rpg-dice-roller@4.0.2/lib/umd/bundle.min.js"></script>
     <script type="text/javascript">
         const icon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="height: 32px; width: 32px;"><path d="M0 0h512v512H0z" fill="#000" fill-opacity="0"></path><g class="" transform="translate(0,0)" style="touch-action: none;"><path d="M74.5 36A38.5 38.5 0 0 0 36 74.5v363A38.5 38.5 0 0 0 74.5 476h363a38.5 38.5 0 0 0 38.5-38.5v-363A38.5 38.5 0 0 0 437.5 36h-363zm48.97 36.03A50 50 0 0 1 172 122a50 50 0 0 1-100 0 50 50 0 0 1 51.47-49.97zm268 0A50 50 0 0 1 440 122a50 50 0 0 1-100 0 50 50 0 0 1 51.47-49.97zM122 206a50 50 0 0 1 0 100 50 50 0 0 1 0-100zm268 0a50 50 0 0 1 0 100 50 50 0 0 1 0-100zM123.47 340.03A50 50 0 0 1 172 390a50 50 0 0 1-100 0 50 50 0 0 1 51.47-49.97zm268 0A50 50 0 0 1 440 390a50 50 0 0 1-100 0 50 50 0 0 1 51.47-49.97z" fill="#000" fill-opacity="1"></path></g></svg>'
+        const icon2 = '<circle cx="12" cy="12" r="9" fill="none" fill-rule="evenodd" stroke="currentColor" stroke-width="2"></circle>'
+
+        class Random {
+            array = new Uint32Array(8192);
+            i = 0;
+            constructor() {
+                window.crypto.getRandomValues(this.array);
+            }
+            next(min = 0, max = undefined) {
+                if (this.i >= this.array.length) {
+                    window.crypto.getRandomValues(this.array);
+                    this.i = 0;
+                }
+                if (max === undefined)
+                    return this.array[this.i++] + min;
+                else
+                    return this.array[this.i++] % max + min;
+            }
+            pick(array) {
+                return array[this.next(max = array.length)];
+            }
+        }
+        const sum = arr => arr.reduce((a, n) => a += parseFloat(n), 0);
+        var random = new Random();
 
         miro.onReady(() => {
             miro.initialize({
                 extensionPoints: {
+                    bottomBar: {
+                        title: 'Demo app button',
+                        svgIcon: icon2,
+                        onClick: () => {
+                            metadata={}
+                            metadata[miro.getClientId()]={diceRange:[1,2,3,4,5,6]};
+                            return miro.board.widgets.create({type: "SHAPE", style:{shapeType: 3}, text: '6', metadata:metadata});
+                        }
+                    },
                     getWidgetMenuItems: (widgets) => {
                         const roller = new rpgDiceRoller.DiceRoller();
                         return {
@@ -18,41 +51,66 @@
                             tooltip: 'Roll Selected',
 
                             onClick: () => {
+                                let diceVars = widgets.reduce((vars, widget) => {
+                                    if (widget.plainText) {
+                                        vars.push(...widget.plainText.matchAll(/(\w[\w\d]*)=(\d+(?:\.\d+)?)/g));
+                                    }
+                                }, []).map(m => {
+                                    return {
+                                        key: m[1],
+                                        value: parseFloat(m[2]),
+                                        re: s => s.replace(new RegExp(`{\s*${m[1]}\s*}`, g), m[2])
+                                    }
+                                });
+                                let rollSum = 0;
 
-                                return Promise.all(widgets.map(w => {
-                                    miro.board.widgets.get({
-                                        id: w.id
-                                    }).then(widget => {
-                                        widget = widget[0];
-                                        if (widget.type && widget.type === "LINE") {
-                                            let end = widget.endPosition;
-                                            let start = widget.startPosition;
-                                            let dx = Math.abs(end.x - start.x);
-                                            let dy = Math.abs(end.y - start.y);
-                                            let dist = Math.max(dx, dy);
-                                            return miro.showNotification(`${(dist*.05).toFixed(2)}sq, ${(dist*.25).toFixed(2)}ft`);
-                                        } else if (widget.plainText) {
-                                            let newtxt = widget.plainText;
-                                            [...widget.plainText.matchAll(/\*.*?\*/g)].map(match => {
+                                const promices = widgets.map(widget => {
+                                    metadata = widget.metadata[miro.getClientId()];
+                                    if (widget.type && widget.type === "LINE") {
+                                        let end = widget.endPosition;
+                                        let start = widget.startPosition;
+                                        let dx = Math.abs(end.x - start.x);
+                                        let dy = Math.abs(end.y - start.y);
+                                        let dist = Math.max(dx, dy);
+                                        return miro.showNotification(`${(dist*.05).toFixed(2)}sq,\n${(dist*.25).toFixed(2)}ft`);
+                                    } else if (widget.plainText) {
+                                        let newtxt = widget.plainText;
+                                        if (metadata && metadata.diceRange) {
+                                            let roll = r.pick(metadata.diceRange);
+                                            newtxt = roll.toString();
+                                            varSum += roll;
+                                        } else {
+                                            [...subbedText.matchAll(/\*(.*?)\*/g)].forEach(match => {
                                                 try {
-                                                    var r = roller.roll(match[0].slice(1, -1).split(':')[0])
-                                                    newtxt = newtxt.replace(match[0], `*${r.output}*`)
+                                                    let unformattedNotation = match[1].split(':')[0];
+                                                    let diceNotation = diceVars.reduce((txt, dicevar) => {
+                                                        return dicevar.re(txt);
+                                                    }, unformattedNotation);
+                                                    var r = roller.roll(diceNotation);
+                                                    newtxt = newtxt.replace(match[0], `*${unformattedNotation}:${r.output.split(':')[1]}*`);
                                                 } catch (error) {
-                                                    newtxt = newtxt.replace(match[0], match[0].slice(1, -1))
+                                                    newtxt = newtxt.replace(match[0], match[1]);
                                                 }
                                             });
-                                            return miro.board.widgets.update({
-                                                id: widget.id,
-                                                text: newtxt
-                                            });
                                         }
-                                    })
-                                }));
+                                        return miro.board.widgets.update({
+                                            id: widget.id,
+                                            text: newtxt,
+                                        });
+                                    }
+                                });
+                                return Promise.all(promices).then(() => {
+                                    if (rollSum !== 0) {
+                                        return miro.showNotification(`Total: ${rollSum + sum(diceVars.map(dv=>dv.value))}`);
+                                    } else {
+                                        return Promise.resolve();
+                                    }
+                                });
                             }
-                        };
+                        }
                     }
                 }
-            })
+            });
         });
     </script>
 </head>
