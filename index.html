@@ -60,8 +60,8 @@
                             tooltip: 'Roll Selected',
 
                             onClick: () => {
-                                return Promise.all(ids.map(id => miro.board.widgets.get({
-                                    id: id
+                                return Promise.all(widgets.map(w => miro.board.widgets.get({
+                                    id: w.id
                                 }).then(w => w[0]))).then(widgets => {
                                     let diceVars = widgets.reduce((vars, widget) => {
                                         if (widget.plainText) {
