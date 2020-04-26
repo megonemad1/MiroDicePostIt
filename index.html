@@ -116,11 +116,8 @@
                                         }
                                     });
                                 })).then(() => {
-                                    if (rollSum !== 0) {
                                         return miro.showNotification(`Total: ${rollSum + sum(diceVars.map(dv=>dv.value))}`);
-                                    } else {
-                                        return Promise.resolve();
-                                    }
+                                   
                                 });
                             }
                         }
