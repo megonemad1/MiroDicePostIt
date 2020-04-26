@@ -90,7 +90,7 @@
                                         } else if (widget.plainText) {
                                             let newtxt = widget.plainText;
                                             if (metadata && metadata.diceRange) {
-                                                let roll = r.pick(metadata.diceRange);
+                                                let roll = random.pick(metadata.diceRange);
                                                 newtxt = roll.toString();
                                                 varSum += roll;
                                             } else {
