@@ -74,6 +74,7 @@
                                     }
                                 });
                                 let rollSum = 0;
+                                miro.showNotification(`vars: ${sum(diceVars.map(dv=>dv.value))}`);
                                 return Promise.all(widgets.map(w => {
                                     miro.board.widgets.get({
                                         id: w.id
