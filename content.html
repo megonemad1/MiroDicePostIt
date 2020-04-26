@@ -157,10 +157,10 @@
 	function bootstrap() {
 		const container = document.getElementById('container')
 		addShapes(container)
-		addImages(container)
+		//addImages(container)
 
         let currentImageUrl
-		const imageOptions = {
+		/*/const imageOptions = {
 			draggableItemSelector: 'img',
 			onClick: async (targetElement) => {
 				const url = targetElement.getAttribute('data-image-url')
@@ -180,8 +180,8 @@
 				console.log('onDrop 1')
 				createImage(canvasX, canvasY, currentImageUrl)
 			}
-		}
-		miro.board.ui.initDraggableItemsContainer(container, imageOptions)
+		}/*/
+		//miro.board.ui.initDraggableItemsContainer(container, imageOptions)
 
 		let currentShapeColor
 		let currentShapeText
