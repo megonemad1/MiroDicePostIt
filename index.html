@@ -108,7 +108,7 @@
                                                     let diceNotation = diceVars.reduce((txt, dicevar) => { //check no # are left and gracefull err out if found
                                                         return dicevar.re(txt);
                                                     }, unformattedNotation);
-                                                    unclamedVars = diceNotation.match(/#\w[\w\d]*/g)
+                                                    let unclamedVars = diceNotation.match(/#\w[\w\d]*/g)
                                                     if (unclamedVars.length == 0)
                                                         try {
                                                             var r = roller.roll(diceNotation);
