@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title></title>
     <script type="text/javascript" src="https://miro.com/app/static/sdk.1.1.js"></script>
 </head>
 
 <style>
-    html, body {
+    html,
+    body {
         height: 100%;
         margin: 0;
         padding: 0;
     }
-
+    
     #container {
         height: 100%;
         overflow-y: auto;
@@ -23,14 +25,14 @@
         padding-top: 32px;
         box-sizing: border-box;
     }
-
+    
     .row {
         display: flex;
         flex-direction: row;
         padding-left: 32px;
         margin-bottom: 32px;
     }
-
+    
     .draggable-item {
         margin-left: 32px;
         margin-bottom: 32px;
@@ -43,81 +45,123 @@
         font-size: 18px;
         font-family: sans-serif;
     }
-
+    
     .draggable-item.red {
         background-color: #f24726;
     }
-
+    
     .draggable-item.green {
         background-color: #0ca788;
     }
-
+    
     .image-box img {
         max-width: 112px;
         max-height: 112px;
         cursor: pointer;
     }
-
 </style>
+
 <body>
-<div id="container">
-</div>
-<script>
+    <div id="container">
+    </div>
+    <script>
+        const diceToShape = {
+            2: 4,
+            4: 5,
+            6: 3,
+            8: 8,
+            10: 10,
+            12: 16,
+            20: 17,
+            100: 10,
+        };
 
+        function addShapes(container) {
+            container.innerHTML += '<div class="shape draggable-item green" data-color="0ca788">I am shape</div>' +
+                '<div class="shape" data-dice-type="4"><svg height="151" width="172"><polygon points="164, 143, 8, 143, 86, 8" style="fill:white;stroke:black;stroke-width:8"/><text x="50%" y="64%" dominant-baseline="middle" text-anchor="middle" fill="black" font-size="2em">4</text></svg></div>'
+        }
 
-	function addShapes(container) {
-		container.innerHTML += '<div class="shape draggable-item green" data-color="0ca788">I am shape</div>' +
-			'<div class="shape draggable-item" data-color="0ca788"><svg height="151" width="172"><polygon points="164, 143, 8, 143, 86, 8" style="fill:white;stroke:black;stroke-width:8"/><text x="50%" y="64%" dominant-baseline="middle" text-anchor="middle" fill="black" font-size="2em">4</text></svg></div>'
-	}
+        class Random {
+            array = new Uint32Array(8192);
+            i = 0;
+            constructor() {
+                window.crypto.getRandomValues(this.array);
+            }
+            next(min = 0, max = undefined) {
+                if (this.i >= this.array.length) {
+                    window.crypto.getRandomValues(this.array);
+                    this.i = 0;
+                }
+                if (max === undefined)
+                    return this.array[this.i++] + min;
+                else
+                    return this.array[this.i++] % max + min;
+            }
+            pick(array) {
+                return array[this.next(0, array.length)];
+            }
+        }
+        const range = (n) => [...new Array(n).keys()]
+        var random = new Random();
 
+        function createShape(canvasX, canvasY, dice_type) {
+            var dice = {
+                type: 'shape',
+                text: dice_type,
+                x: canvasX,
+                y: canvasY,
+                style: {
+                    shapeType: diceToShape[dice_type],
+                    textColor: '#000000',
+                    backgroundColor: '#fff',
+                    borderColor: 'transparent'
+                },
+                metadata: {}
+            }
+            uniform_dice_range = range(dice_type).map(n => n + 1);
 
-	function createShape(canvasX, canvasY, color, text) {
-		return miro.board.widgets.create({
-			type: 'shape',
-			text: text,
-			x: canvasX,
-			y: canvasY,
-			style: {
-				textColor: '#fff',
-				backgroundColor: '#' + color,
-				borderColor: 'transparent'
-			}
-		})
-	}
+            var meta = {
+                diceRange: [
+                    ...uniform_dice_range,
+                    ...uniform_dice_range,
+                    ...uniform_dice_range,
+                    ...uniform_dice_range.map(n => random.next(0, dice_type) + 1)
+                ]
+            }
+            dice.metadata[miro.getClientId()] = meta
+            return miro.board.widgets.create(dice)
+        }
 
-	function bootstrap() {
-		const container = document.getElementById('container')
-		addShapes(container)
+        function bootstrap() {
+            const container = document.getElementById('container')
+            addShapes(container)
 
-        let currentImageUrl
-	
-		let currentShapeColor
-		let currentShapeText
-		const shapeOptions = {
-			draggableItemSelector: '.shape',
-			onClick: async (targetElement) => {
-				const color = targetElement.getAttribute('data-color')
-				const text = targetElement.innerText
-				const widget = (await createShape(0, 0, color, text))[0]
-				miro.board.viewport.zoomToObject(widget)
+            let currentImageUrl
 
-			},
-			getDraggableItemPreview: (targetElement) => {
-				currentShapeColor = targetElement.getAttribute('data-color')
-				currentShapeText = targetElement.innerText
-				return {
-					url: `data:image/svg+xml,%3Csvg width='140' height='140' xmlns='http://www.w3.org/2000/svg'%3E%3Cg%3E%3Crect stroke='null' x='0' y='0' fill='%23${currentShapeColor}' height='140' width='140'/%3E%3C/g%3E%3C/svg%3E`
-				}
-			},
-			onDrop: (canvasX, canvasY) => {
-				console.log('onDrop 2')
-				createShape(canvasX, canvasY, currentShapeColor, currentShapeText)
-			}
-		}
-		miro.board.ui.initDraggableItemsContainer(container, shapeOptions)
-	}
+            let currentShapeColor
+            let currentShapeText
+            const shapeOptions = {
+                draggableItemSelector: '.shape',
+                onClick: async(targetElement) => {
+                    const dice_type = targetElement.getAttribute('data-dice-type')
+                    createShape(0, 0, dice_type)
+                        .then(widget => miro.board.viewport.zoomToObject(widget[0]));
+                },
+                getDraggableItemPreview: (targetElement) => {
+                    currentShapeColor = encodeURI(targetElement.innerHTML);
+                    return {
+                        url: `data:image/svg+xml,${currentShapeColor}`
+                    }
+                },
+                onDrop: (canvasX, canvasY) => {
+                    createShape(canvasX, canvasY, currentShapeColor, currentShapeText)
+                }
+            }
+            miro.board.ui.initDraggableItemsContainer(container, shapeOptions)
+        }
 
-	miro.onReady(bootstrap)
-</script>
+        miro.onReady(bootstrap)
+    </script>
 </body>
+
 </html>
