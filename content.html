@@ -126,7 +126,7 @@
                 diceRange: [...uniform_dice_range.reduce((acc, n) => {
                         return [...acc, ...uniform_dice_range]
                     }, []),
-                    ...uniform_dice_range.map(n => random.pick(dice_type))
+                    ...uniform_dice_range.map(n => random.pick(uniform_dice_range))
                 ]
             }
             dice.metadata[miro.getClientId()] = meta
