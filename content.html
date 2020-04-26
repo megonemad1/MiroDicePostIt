@@ -137,11 +137,11 @@
             const container = document.getElementById('container')
             addShapes(container)
 
-            const dice_type = 0;
+            let dice_type = 0;
             const shapeOptions = {
                 draggableItemSelector: '.shape',
                 onClick: async(targetElement) => {
-                    const dice_type = targetElement.getAttribute('data-dice-type')
+                    dice_type = targetElement.getAttribute('data-dice-type')
                     createShape(0, 0, dice_type)
                         .then(widget => miro.board.viewport.zoomToObject(widget[0]));
                 },
