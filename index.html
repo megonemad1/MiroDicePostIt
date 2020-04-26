@@ -76,7 +76,7 @@
                                         }
                                     });
                                     let rollSum = 0;
-                                    miro.showNotification(`vars: ${diceVars}`);
+                                    miro.showNotification(`vars: ${JSON.stringify(diceVars)}`);
                                     return Promise.all(widgets.map(widget => {
                                             metadata = widget.metadata[miro.getClientId()];
                                             if (widget.type && widget.type === "LINE") {
@@ -114,7 +114,7 @@
                                                 });
                                             }
                                         })).then(() => {
-                                        // return miro.showNotification(`Total: ${rollSum + sum(diceVars.map(dv=>dv.value))}`);
+                                        return miro.showNotification(`Total: ${rollSum + sum(diceVars.map(dv=>dv.value))}`);
 
                                     });
                                 });
