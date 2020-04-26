@@ -79,8 +79,7 @@
         };
 
         function addShapes(container) {
-            container.innerHTML += '<div class="shape draggable-item green" data-color="0ca788">I am shape</div>' +
-                '<div class="shape" data-dice-type="4"><svg height="151" width="172"><polygon points="164, 143, 8, 143, 86, 8" style="fill:white;stroke:black;stroke-width:8"/><text x="50%" y="64%" dominant-baseline="middle" text-anchor="middle" fill="black" font-size="2em">4</text></svg></div>'
+            container.innerHTML += [2, 4, 6, 8, 10, 12, 20].map(n => `<div class="shape" data-dice-type="${n}"><svg height="151" width="172"><polygon points="164, 143, 8, 143, 86, 8" style="fill:white;stroke:black;stroke-width:8"/><text x="50%" y="64%" dominant-baseline="middle" text-anchor="middle" fill="black" font-size="2em">D${n}</text></svg></div>`).join("\n");
         }
 
         class Random {
@@ -124,11 +123,10 @@
             var uniform_dice_range = range(dice_type).map(n => n + 1);
 
             var meta = {
-                diceRange: [
-                    ...uniform_dice_range,
-                    ...uniform_dice_range,
-                    ...uniform_dice_range,
-                    ...uniform_dice_range.map(n => random.next(0, dice_type) + 1)
+                diceRange: [...uniform_dice_range.reduce((acc, n) => {
+                        return [...acc, ...uniform_dice_range]
+                    }, []),
+                    ...uniform_dice_range.map(n => random.pick(dice_type))
                 ]
             }
             dice.metadata[miro.getClientId()] = meta
