@@ -92,7 +92,7 @@
                                             if (metadata && metadata.diceRange) {
                                                 let roll = random.pick(metadata.diceRange);
                                                 newtxt = roll.toString();
-                                                varSum += roll;
+                                                rollSum += roll;
                                             } else {
                                                 [...widget.plainText.matchAll(/\*(.*?)\*/g)].forEach(match => {
                                                     try {
