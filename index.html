@@ -34,22 +34,31 @@
         miro.onReady(() => {
             miro.initialize({
                 extensionPoints: {
+                    /*/ bottomBar: {
+                         title: 'Demo app button',
+                         svgIcon: icon2,
+                         onClick: () => {
+                             metadata = {}
+                             metadata[miro.getClientId()] = {
+                                 diceRange: [1, 2, 3, 4, 5, 6]
+                             };
+                             return miro.board.widgets.create({// make a proper dice creator and styler
+                                 type: "SHAPE",
+                                 style: {
+                                     shapeType: 3
+                                 },
+                                 text: '6',
+                                 metadata: metadata
+                             });
+                         }
+                     },/*/
                     bottomBar: {
-                        title: 'Demo app button',
-                        svgIcon: icon2,
+                        title: 'Dropper',
+                        svgIcon: icon24,
                         onClick: () => {
-                            metadata = {}
-                            metadata[miro.getClientId()] = {
-                                diceRange: [1, 2, 3, 4, 5, 6]
-                            };
-                            return miro.board.widgets.create({
-                                type: "SHAPE",
-                                style: {
-                                    shapeType: 3
-                                },
-                                text: '6',
-                                metadata: metadata
-                            });
+                            miro.board.ui.openLibrary('content.html', {
+                                title: 'Dropper'
+                            })
                         }
                     },
                     getWidgetMenuItems: (widgets) => {
@@ -72,7 +81,7 @@
                                         return {
                                             key: m[1],
                                             value: parseFloat(m[2]),
-                                            re: s => s.replace(new RegExp(`{\s*${m[1]}\s*}`, "g"), m[2])
+                                            re: s => s.replace(new RegExp(`#${m[1]}`, "g"), m[2])
                                         }
                                     });
                                     let rollSum = 0;
@@ -95,15 +104,15 @@
                                                 foundDice = true;
                                             } else {
                                                 [...widget.plainText.matchAll(/\*(.*?)\*/g)].forEach(match => {
-                                                        let unformattedNotation = match[1].split(':')[0];
+                                                    let unformattedNotation = match[1].split(':')[0];
                                                     try {
-                                                        let diceNotation = diceVars.reduce((txt, dicevar) => {
+                                                        let diceNotation = diceVars.reduce((txt, dicevar) => { //check no # are left and gracefull err out if found
                                                             return dicevar.re(txt);
                                                         }, unformattedNotation);
                                                         var r = roller.roll(diceNotation);
                                                         newtxt = newtxt.replace(match[0], `*${unformattedNotation}:${r.output.split(':')[1]}*`);
                                                     } catch (error) {
-                                                        newtxt = newtxt.replace(match[0], `*${unformattedNotation}: err ${error}*`);
+                                                        newtxt = newtxt.replace(match[0], `*${unformattedNotation}: ${error}*`);
                                                     }
                                                 });
                                             }
