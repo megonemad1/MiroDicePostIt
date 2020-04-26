@@ -95,18 +95,18 @@
                                                 foundDice = true;
                                             } else {
                                                 [...widget.plainText.matchAll(/\*(.*?)\*/g)].forEach(match => {
-                                                    try {
+                                                   // try {
                                                         let unformattedNotation = match[1].split(':')[0];
                                                         let diceNotation = diceVars.reduce((txt, dicevar) => {
                                                             return dicevar.re(txt);
                                                         }, unformattedNotation);
                                                         var r = roller.roll(diceNotation);
                                                         newtxt = newtxt.replace(match[0], `*${unformattedNotation}:${r.output.split(':')[1]}*`);
-                                                    } catch (error) {
+                                                   /*/ } catch (error) {
 
                                                         newtxt = newtxt.replace(match[0], match[1]);
                                                         miro.showErrorNotification(error);
-                                                    }
+                                                    }/*/
                                                 });
                                             }
                                             return miro.board.widgets.update({
