@@ -109,15 +109,15 @@
                                                         return dicevar.re(txt);
                                                     }, unformattedNotation);
                                                     let unclamedVars = diceNotation.match(/#\w[\w\d]*/g)
-                                                    if (unclamedVars.length == 0)
+                                                    if (unclamedVars && unclamedVars.length != 0)
+                                                        newtxt = newtxt.replace(match[0], `*${unformattedNotation}: missing definitions ${unclamedVars}*`);
+                                                    else
                                                         try {
                                                             var r = roller.roll(diceNotation);
                                                             newtxt = newtxt.replace(match[0], `*${unformattedNotation}:${r.output.split(':')[1]}*`);
                                                         } catch (error) {
                                                             newtxt = newtxt.replace(match[0], `*${unformattedNotation}: ${error}*`);
                                                         }
-                                                    else
-                                                        newtxt = newtxt.replace(match[0], `*${unformattedNotation}: missing definitions ${unclamedVars}*`);
                                                 });
                                             }
                                             return miro.board.widgets.update({
