@@ -103,7 +103,7 @@
                 return array[this.next(0, array.length)];
             }
         }
-        const range = (n) => [...new Array(n).keys()]
+        const range = (n) => [...new Array(parseInt(n)).keys()]
         var random = new Random();
 
         function createShape(canvasX, canvasY, dice_type) {
@@ -121,7 +121,7 @@
                 },
                 metadata: {}
             }
-            uniform_dice_range = range(dice_type).map(n => n + 1);
+            var uniform_dice_range = range(dice_type).map(n => n + 1);
 
             var meta = {
                 diceRange: [
