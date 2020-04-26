@@ -114,7 +114,8 @@
                     shapeType: diceToShape[dice_type],
                     textColor: '#000000',
                     backgroundColor: '#fff',
-                    borderColor: 'transparent'
+                    borderColor: "#000000", 
+                    borderWidth: 2
                 },
                 metadata: {}
             }
@@ -148,6 +149,7 @@
                         .then(widget => miro.board.viewport.zoomToObject(widget[0]));
                 },
                 getDraggableItemPreview: (targetElement) => {
+                    console.log(currentShapeColor)
                     currentShapeColor = encodeURI(targetElement.innerHTML);
                     return {
                         url: `data:image/svg+xml,${currentShapeColor}`
