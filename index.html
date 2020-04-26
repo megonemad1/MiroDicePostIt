@@ -76,46 +76,48 @@
                                         }
                                     });
                                     let rollSum = 0;
-                                    miro.showNotification(`vars: ${JSON.stringify(diceVars)}`);
+                                    let foundDice = false;
                                     return Promise.all(widgets.map(widget => {
-                                            metadata = widget.metadata[miro.getClientId()];
-                                            if (widget.type && widget.type === "LINE") {
-                                                let end = widget.endPosition;
-                                                let start = widget.startPosition;
-                                                let dx = Math.abs(end.x - start.x);
-                                                let dy = Math.abs(end.y - start.y);
-                                                let dist = Math.max(dx, dy);
-                                                return miro.showNotification(`${(dist*.05).toFixed(2)}sq,\n${(dist*.25).toFixed(2)}ft`);
-                                            } else if (widget.plainText) {
-                                                let newtxt = widget.plainText;
-                                                if (metadata && metadata.diceRange) {
-                                                    let roll = random.pick(metadata.diceRange);
-                                                    newtxt = roll.toString();
-                                                    rollSum += roll;
-                                                } else {
-                                                    [...widget.plainText.matchAll(/\*(.*?)\*/g)].forEach(match => {
-                                                        try {
-                                                            let unformattedNotation = match[1].split(':')[0];
-                                                            let diceNotation = diceVars.reduce((txt, dicevar) => {
-                                                                return dicevar.re(txt);
-                                                            }, unformattedNotation);
-                                                            var r = roller.roll(diceNotation);
-                                                            newtxt = newtxt.replace(match[0], `*${unformattedNotation}:${r.output.split(':')[1]}*`);
-                                                        } catch (error) {
+                                        metadata = widget.metadata[miro.getClientId()];
+                                        if (widget.type && widget.type === "LINE") {
+                                            let end = widget.endPosition;
+                                            let start = widget.startPosition;
+                                            let dx = Math.abs(end.x - start.x);
+                                            let dy = Math.abs(end.y - start.y);
+                                            let dist = Math.max(dx, dy);
+                                            return miro.showNotification(`${(dist*.05).toFixed(2)}sq,\n${(dist*.25).toFixed(2)}ft`);
+                                        } else if (widget.plainText) {
+                                            let newtxt = widget.plainText;
+                                            if (metadata && metadata.diceRange) {
+                                                let roll = random.pick(metadata.diceRange);
+                                                newtxt = roll.toString();
+                                                rollSum += roll;
+                                                foundDice = true;
+                                            } else {
+                                                [...widget.plainText.matchAll(/\*(.*?)\*/g)].forEach(match => {
+                                                    try {
+                                                        let unformattedNotation = match[1].split(':')[0];
+                                                        let diceNotation = diceVars.reduce((txt, dicevar) => {
+                                                            return dicevar.re(txt);
+                                                        }, unformattedNotation);
+                                                        var r = roller.roll(diceNotation);
+                                                        newtxt = newtxt.replace(match[0], `*${unformattedNotation}:${r.output.split(':')[1]}*`);
+                                                    } catch (error) {
 
-                                                            newtxt = newtxt.replace(match[0], match[1]);
-                                                            miro.showErrorNotification(error);
-                                                        }
-                                                    });
-                                                }
-                                                return miro.board.widgets.update({
-                                                    id: widget.id,
-                                                    text: newtxt,
+                                                        newtxt = newtxt.replace(match[0], match[1]);
+                                                        miro.showErrorNotification(error);
+                                                    }
                                                 });
                                             }
-                                        })).then(() => {
-                                        return miro.showNotification(`Total: ${rollSum + sum(diceVars.map(dv=>dv.value))}`);
-
+                                            return miro.board.widgets.update({
+                                                id: widget.id,
+                                                text: newtxt,
+                                            });
+                                        }
+                                    })).then(() => {
+                                        if (foundDice)
+                                            return miro.showNotification(`Total: ${rollSum + sum(diceVars.map(dv=>dv.value))}`);
+                                        return Promise.resolve();
                                     });
                                 });
                             }
