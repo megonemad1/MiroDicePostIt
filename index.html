@@ -103,9 +103,7 @@
                                                         var r = roller.roll(diceNotation);
                                                         newtxt = newtxt.replace(match[0], `*${unformattedNotation}:${r.output.split(':')[1]}*`);
                                                     } catch (error) {
-
-                                                        newtxt = newtxt.replace(match[0], match[1]);
-                                                        miro.showErrorNotification(error);
+                                                        newtxt = newtxt.replace(match[0], `*${unformattedNotation}: err ${error}*`);
                                                     }
                                                 });
                                             }
