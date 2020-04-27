@@ -115,7 +115,7 @@
             return "#" + componentToHex(rgb.r) + componentToHex(rgb.g) + componentToHex(rgb.b);
         }
 
-        const hsvToHex = (h, s, v) => rgbToHex(HSVtoRGB(h,s,v));
+        const hsvToHex = (h, s, v) => rgbToHex(HSVtoRGB(h, s, v));
 
         fonts = [
             'ARIAL',
@@ -183,8 +183,8 @@
             pick(array) {
                 return array[this.next(0, array.length)];
             }
-            nextFloat(){
-                return this.next()/0xFFFFFFFF
+            nextFloat() {
+                return this.next() / 0xFFFFFFFF
             }
         }
         var random = new Random();
@@ -192,18 +192,21 @@
 
         function createShape(canvasX, canvasY, dice_type) {
             let color1v = random.nextFloat();
-            let color2v = (color1v+.5)%1;
+            let color2v = (color1v + .5) % 1;
             let color1s = random.nextFloat();
-            let color2s = (color1v+.5)%1;
-            let color1 = hsvToHex(random.nextFloat(),color1s,color1v);
-            let color2 = hsvToHex(random.nextFloat(),color2s,color2v);
+            let color2s = (color1v + .5) % 1;
+            let color1 = hsvToHex(random.nextFloat(), color1s, color1v);
+            let color2 = hsvToHex(random.nextFloat(), color2s, color2v);
             var dice = {
+                capabilities: {
+                    editable: false
+                },
                 type: 'shape',
                 text: dice_type,
                 x: canvasX,
                 y: canvasY,
-                width:120,
-                height:120,
+                width: 120,
+                height: 120,
                 style: {
                     shapeType: diceToShape[dice_type],
                     backgroundColor: color2,
@@ -213,7 +216,7 @@
                     borderOpacity: 1,
                     borderStyle: 2,
                     borderWidth: 8,
-                    fontFamily: random.next(0,fonts.length),
+                    fontFamily: random.next(0, fonts.length),
                     fontSize: 24,
                     highlighting: "",
                     italic: 0,
@@ -254,7 +257,7 @@
                     dice_type = targetElement.getAttribute('data-dice-type')
                     let svg = targetElement.innerHTML;
                     return {
-                        url:  `data:image/svg+xml,${diceIcon}`
+                        url: `data:image/svg+xml,${diceIcon}`
                     }
                 },
                 onDrop: (canvasX, canvasY) => {
