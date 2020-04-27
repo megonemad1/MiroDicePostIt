@@ -253,8 +253,7 @@
                 draggableItemSelector: '.shape',
                 onClick: async(targetElement) => {
                     dice_type = targetElement.getAttribute('data-dice-type')
-                    createShape(0, 0, dice_type)
-                        .then(widget => miro.board.viewport.zoomToObject(widget[0]));
+                    createShape(0, 0, dice_type);
                 },
                 getDraggableItemPreview: (targetElement) => {
                     dice_type = targetElement.getAttribute('data-dice-type')
