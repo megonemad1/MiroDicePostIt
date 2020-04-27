@@ -249,8 +249,9 @@
                 },
                 getDraggableItemPreview: (targetElement) => {
                     dice_type = targetElement.getAttribute('data-dice-type')
+                    let svg = targetElement.innerHTML;
                     return {
-                        url: `data:image/svg+xml,${diceIcon}`
+                        url: svg
                     }
                 },
                 onDrop: (canvasX, canvasY) => {
