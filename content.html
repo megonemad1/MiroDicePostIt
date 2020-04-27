@@ -251,7 +251,7 @@
                     dice_type = targetElement.getAttribute('data-dice-type')
                     let svg = targetElement.innerHTML;
                     return {
-                        url: svg
+                        url:  `data:image/svg+xml,${svg}`
                     }
                 },
                 onDrop: (canvasX, canvasY) => {
