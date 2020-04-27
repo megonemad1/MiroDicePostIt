@@ -161,7 +161,7 @@
         };
 
         function addShapes(container) {
-            container.innerHTML += [2, 4, 6, 8, 10, 12, 20].map(n => `<div data-dice-type="${n}" class="shape draggable-item">D${n}</div>`).join("\n");
+            container.innerHTML += [2, 4, 6, 8, 10, 12, 20, 100].map(n => `<div data-dice-type="${n}" class="shape draggable-item">D${n}</div>`).join("\n");
         }
 
         class Random {
@@ -228,7 +228,10 @@
                 },
                 metadata: {}
             }
-            var uniform_dice_range = range(dice_type).map(n => n + 1);
+            if (dice_type === 10 || dice_type === 100)
+                var uniform_dice_range = range(dice_type).map(n => n * dice_type * .1);
+            else
+                var uniform_dice_range = range(dice_type).map(n => n + 1);
 
             var meta = {
                 diceRange: [...uniform_dice_range.reduce((acc, n) => {
