@@ -160,7 +160,7 @@
         };
 
         function addShapes(container) {
-            container.innerHTML += [2, 4, 6, 8, 10, 12, 20].map(n => `<div class="shape" data-dice-type="${n}"><svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 151 172" style="height: 128px; width: 128px;"><polygon points="164, 143, 8, 143, 86, 8" style="fill:white;stroke:black;stroke-width:8"/><text x="50%" y="64%" dominant-baseline="middle" text-anchor="middle" fill="black" font-size="2em">D${n}</text></svg></div>`).join("\n");
+            container.innerHTML += [2, 4, 6, 8, 10, 12, 20].map(n => `<div data-dice-type="${n}" class="shape draggable-item">D${n}</div>`).join("\n");
         }
 
         class Random {
@@ -251,7 +251,7 @@
                     dice_type = targetElement.getAttribute('data-dice-type')
                     let svg = targetElement.innerHTML;
                     return {
-                        url:  `data:image/svg+xml, <svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 151 172" style="height: 128px; width: 128px;"><polygon points="164, 143, 8, 143, 86, 8" style="fill:white;stroke:black;stroke-width:8"/><text x="50%" y="64%" dominant-baseline="middle" text-anchor="middle" fill="black" font-size="2em">D${dice_type}</text></svg>`
+                        url:  `data:image/svg+xml,${diceIcon}`
                     }
                 },
                 onDrop: (canvasX, canvasY) => {
