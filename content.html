@@ -67,6 +67,87 @@
     <script>
         const diceIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="height: 32px; width: 32px;"><path d="M0 0h512v512H0z" fill="#000" fill-opacity="0"></path><g class="" transform="translate(0,0)" style="touch-action: none;"><path d="M74.5 36A38.5 38.5 0 0 0 36 74.5v363A38.5 38.5 0 0 0 74.5 476h363a38.5 38.5 0 0 0 38.5-38.5v-363A38.5 38.5 0 0 0 437.5 36h-363zm48.97 36.03A50 50 0 0 1 172 122a50 50 0 0 1-100 0 50 50 0 0 1 51.47-49.97zm268 0A50 50 0 0 1 440 122a50 50 0 0 1-100 0 50 50 0 0 1 51.47-49.97zM122 206a50 50 0 0 1 0 100 50 50 0 0 1 0-100zm268 0a50 50 0 0 1 0 100 50 50 0 0 1 0-100zM123.47 340.03A50 50 0 0 1 172 390a50 50 0 0 1-100 0 50 50 0 0 1 51.47-49.97zm268 0A50 50 0 0 1 440 390a50 50 0 0 1-100 0 50 50 0 0 1 51.47-49.97z" fill="#000" fill-opacity="1"></path></g></svg>'
 
+        function HSVtoRGB(h, s, v) {
+            var r, g, b, i, f, p, q, t;
+            if (arguments.length === 1) {
+                s = h.s, v = h.v, h = h.h;
+            }
+            i = Math.floor(h * 6);
+            f = h * 6 - i;
+            p = v * (1 - s);
+            q = v * (1 - f * s);
+            t = v * (1 - (1 - f) * s);
+            switch (i % 6) {
+                case 0:
+                    r = v, g = t, b = p;
+                    break;
+                case 1:
+                    r = q, g = v, b = p;
+                    break;
+                case 2:
+                    r = p, g = v, b = t;
+                    break;
+                case 3:
+                    r = p, g = q, b = v;
+                    break;
+                case 4:
+                    r = t, g = p, b = v;
+                    break;
+                case 5:
+                    r = v, g = p, b = q;
+                    break;
+            }
+            return {
+                r: Math.round(r * 255),
+                g: Math.round(g * 255),
+                b: Math.round(b * 255)
+            };
+        }
+
+
+        function componentToHex(c) {
+            var hex = c.toString(16);
+            return hex.length == 1 ? "0" + hex : hex;
+        }
+
+        function rgbToHex(rgb) {
+            return "#" + componentToHex(rgb.r) + componentToHex(rgb.g) + componentToHex(rgb.b);
+        }
+
+        const hsvToHex = (h, s, v) => rgbToHex(HSVtoRGB(h,s,v));
+
+        fonts = [
+            'ARIAL',
+            'CURSIVE',
+            'ABRIL_FATFACE',
+            'BANGERS',
+            'EB_GARAMOND',
+            'GEORGIA',
+            'GRADUATE',
+            'GRAVITAS_ONE',
+            'FREDOKA_ONE',
+            'NIXIE_ONE',
+            'OPEN_SANS',
+            'PERMANENT_MARKER',
+            'PT_SANS',
+            'PT_SANS_NARROW',
+            'PT_SERIF',
+            'RAMMETTO_ONE',
+            'ROBOTO',
+            'ROBOTO_CONDENSED',
+            'ROBOTO_SLAB',
+            'CAVEAT',
+            'TIMES_NEW_ROMAN',
+            'TITAN_ONE',
+            'LEMON_TUESDAY',
+            'ROBOTO_MONO',
+            'NOTO_SANS',
+            'PLEX_SANS',
+            'PLEX_SERIF',
+            'PLEX_MONO'
+        ]
+
+
         const diceToShape = {
             2: 4,
             4: 5,
@@ -101,22 +182,44 @@
             pick(array) {
                 return array[this.next(0, array.length)];
             }
+            nextFloat(){
+                return this.next()/0xFFFFFFFF
+            }
         }
         var random = new Random();
         const range = (n) => [...new Array(parseInt(n)).keys()]
 
         function createShape(canvasX, canvasY, dice_type) {
+            let color1v = random.nextFloat();
+            let color2v = (color1v+.5)%1;
+            let color1 = hsvToHex(random.nextFloat(),random.nextFloat(),color1v);
+            let color2 = hsvToHex(random.nextFloat(),random.nextFloat(),color2v);
             var dice = {
                 type: 'shape',
                 text: dice_type,
                 x: canvasX,
                 y: canvasY,
+                width:120,
+                height:120,
                 style: {
                     shapeType: diceToShape[dice_type],
-                    textColor: '#000000',
-                    backgroundColor: '#fff',
-                    borderColor: "#000000",
-                    borderWidth: 2
+                    backgroundColor: color2,
+                    backgroundOpacity: 1,
+                    bold: 0,
+                    borderColor: color1,
+                    borderOpacity: 1,
+                    borderStyle: 2,
+                    borderWidth: 8,
+                    fontFamily: random.next(0,fonts.length),
+                    fontSize: 24,
+                    highlighting: "",
+                    italic: 0,
+                    shapeType: 8,
+                    strike: 0,
+                    textAlign: "c",
+                    textAlignVertical: "m",
+                    textColor: color1,
+                    underline: 0,
                 },
                 metadata: {}
             }
