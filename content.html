@@ -193,8 +193,10 @@
         function createShape(canvasX, canvasY, dice_type) {
             let color1v = random.nextFloat();
             let color2v = (color1v+.5)%1;
-            let color1 = hsvToHex(random.nextFloat(),random.nextFloat(),color1v);
-            let color2 = hsvToHex(random.nextFloat(),random.nextFloat(),color2v);
+            let color1s = random.nextFloat();
+            let color2s = (color1v+.5)%1;
+            let color1 = hsvToHex(random.nextFloat(),color1s,color1v);
+            let color2 = hsvToHex(random.nextFloat(),color2s,color2v);
             var dice = {
                 type: 'shape',
                 text: dice_type,
