@@ -38,8 +38,14 @@
             }
             return miro.isAuthorized().then(isauth => {
                 if (!isauth)
-                    return miro.authorize(authorizeOptions);
-                return Promice.resolve();
+                    return miro.authorize(authorizeOptions).then(() => miro.getToken())
+                        .then((token) => {
+                            if (token)
+                                return Promise.resolve();
+                            else
+                                return Promise.reject("auth fail");
+                        });
+                return Promise.resolve();
             });
 
         }
@@ -129,7 +135,7 @@
                         }
                     }
                 }
-            }));
+            })).catch(e=>miro.showErrorNotification(e));
         });
     </script>
 </head>
