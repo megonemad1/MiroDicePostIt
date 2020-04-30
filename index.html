@@ -34,12 +34,11 @@
         function authorise() {
             const authorizeOptions = {
                 response_type: 'token',
-                redirect_uri: 'http://' + window.location.host
+                redirect_uri: 'http://' + window.location
             }
             return miro.isAuthorized().then(isauth => {
-                if (isauth)
+                if (!isauth)
                     return miro.authorize(authorizeOptions);
-                miro.showErrorNotification("failed to auth");
                 return Promice.resolve();
             });
 
