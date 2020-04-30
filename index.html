@@ -31,27 +31,22 @@
         const sum = arr => arr.reduce((a, n) => a + parseFloat(n), 0);
         var random = new Random();
 
+        function authorise() {
+            const authorizeOptions = {
+                response_type: 'token',
+                redirect_uri: 'http://' + window.location.host
+            }
+            return miro.isAuthorized().then(isauth => {
+                if (isauth)
+                    return miro.authorize(authorizeOptions);
+                miro.showErrorNotification("failed to auth");
+                return Promice.resolve();
+            });
+
+        }
         miro.onReady(() => {
-            miro.initialize({
+            authorise().then(() => miro.initialize({
                 extensionPoints: {
-                    /*/ bottomBar: {
-                         title: 'Demo app button',
-                         svgIcon: icon2,
-                         onClick: () => {
-                             metadata = {}
-                             metadata[miro.getClientId()] = {
-                                 diceRange: [1, 2, 3, 4, 5, 6]
-                             };
-                             return miro.board.widgets.create({// make a proper dice creator and styler
-                                 type: "SHAPE",
-                                 style: {
-                                     shapeType: 3
-                                 },
-                                 text: '6',
-                                 metadata: metadata
-                             });
-                         }
-                     },/*/
                     bottomBar: {
                         title: 'Dropper',
                         svgIcon: icon,
@@ -135,7 +130,7 @@
                         }
                     }
                 }
-            });
+            }));
         });
     </script>
 </head>
