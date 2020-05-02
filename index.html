@@ -89,17 +89,20 @@
                                     id: w.id
                                 }).then(w => w[0]))).then(widgets => {
                                     let diceVars = widgets.reduce((vars, widget) => {
-                                        if (widget.plainText) {
-                                            return [...vars, ...widget.plainText.matchAll(/(\w[\w\d]*)=([\+\-]?\d+(?:\.\d+)?)/g)];
-                                        }
-                                        return vars;
-                                    }, []).map(m => {
-                                        return {
-                                            key: m[1],
-                                            value: parseFloat(m[2]),
-                                            re: s => s.replace(new RegExp(`#${m[1]}`, "g"), m[2])
-                                        }
-                                    });
+                                            if (widget.plainText) {
+                                                return [...vars, ...widget.plainText.matchAll(/(\w[\w\d]*)=([\+\-]?\d+(?:\.\d+)?)/g)];
+                                            }
+                                            return vars;
+                                        }, [])
+                                        .sort((a, b) => a[1] - b[1])
+                                        .reverse()
+                                        .map(m => {
+                                            return {
+                                                key: m[1],
+                                                value: parseFloat(m[2]),
+                                                re: s => s.replace(new RegExp(`#${m[1]}`, "g"), m[2])
+                                            }
+                                        });
                                     let rollSum = 0;
                                     let foundDice = false;
                                     return Promise.all(widgets.map(widget => {
@@ -151,7 +154,7 @@
                         }
                     }
                 }
-            })).catch(e=>miro.showErrorNotification(e));
+            })).catch(e => miro.showErrorNotification(e));
         });
     </script>
 </head>
