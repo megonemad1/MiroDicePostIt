@@ -170,21 +170,34 @@
             constructor() {
                 window.crypto.getRandomValues(this.array);
             }
-            next(min = 0, max = undefined) {
+            nextUInt() {
                 if (this.i >= this.array.length) {
                     window.crypto.getRandomValues(this.array);
                     this.i = 0;
                 }
-                if (max === undefined)
-                    return this.array[this.i++] + min;
-                else
-                    return this.array[this.i++] % max + min;
+                return this.array[this.i++];
+            }
+            weightedPick(pairs) {
+                let c = pairs.reduce((acc, i) => acc + i[1], 0);
+                let r = this.nextFloat() * c;
+                for (var i = 0; i < pairs.length; i++) {
+                    const pair = pairs[i];
+                    if (pair[1] < r)
+                        r -= pair[1];
+                    else
+                        return pair[0];
+                }
+                return pairs[0][0]; // should be unreachable, if float err covers ass
+
+            }
+            next(min, max) {
+                return Math.floor(this.nextFloat() * (max - min)) + min;
             }
             pick(array) {
                 return array[this.next(0, array.length)];
             }
             nextFloat() {
-                return this.next() / 0xFFFFFFFF
+                return this.nextUInt() / 0xFFFFFFFF
             }
         }
         var random = new Random();
@@ -228,21 +241,39 @@
                 },
                 metadata: {}
             }
-            if (dice_type == 10 || dice_type == 100)
-                var uniform_dice_range = range(10).map(n => n * dice_type * .1);
-            else
-                var uniform_dice_range = range(dice_type).map(n => n + 1);
-
             var meta = {
-                diceRange: [...uniform_dice_range.reduce((acc, n) => {
-                        return [...acc, ...uniform_dice_range]
-                    }, []),
-                    ...uniform_dice_range.map(n => random.pick(uniform_dice_range))
-                ]
+                diceRange: makeDice(dice_type)
             }
             dice.metadata[miro.getClientId()] = meta
             return miro.board.widgets.create(dice)
         }
+
+
+
+
+
+        function makeDice(dice_type) {
+
+            if (dice_type == 10 || dice_type == 100)
+                var uniform_dice_range = range(10).map(n => n * dice_type * .1);
+            else
+                var uniform_dice_range = range(dice_type).map(n => n + 1);
+            let uniform_p = 1 / uniform_dice_range.length;
+            weighted_range = uniform_dice_range.reduce((acc, n) => {
+                acc[random.pick(uniform_dice_range)] += uniform_p * .01; // increase chance by 1%
+                acc[random.pick(uniform_dice_range)] -= uniform_p * .01; // decrease chance by 1%
+                return acc;
+            }, uniform_dice_range.reduce((acc, n) => { // setup dice as uniform probability
+                acc[n] = uniform_p;
+                return acc
+            }, {}));
+            weighted_range[random.pick(uniform_dice_range)] += 1 - Object.entries(weighted_range).reduce((acc, i) => acc + i[1], 0); // ~= 0 but for numbers that don't divide on computers its not
+            return weighted_range;
+        }
+
+
+
+
 
         function bootstrap() {
             const container = document.getElementById('container')

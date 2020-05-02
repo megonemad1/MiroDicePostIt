@@ -14,18 +14,34 @@
             constructor() {
                 window.crypto.getRandomValues(this.array);
             }
-            next(min = 0, max = undefined) {
+            next(min, max) {
+                return Math.floor(this.nextFloat() * (max - min)) + min;
+            }
+            nextUInt() {
                 if (this.i >= this.array.length) {
                     window.crypto.getRandomValues(this.array);
                     this.i = 0;
                 }
-                if (max === undefined)
-                    return this.array[this.i++] + min;
-                else
-                    return this.array[this.i++] % max + min;
+                return this.array[this.i++];
+            }
+            weightedPick(pairs) {
+                let c = pairs.reduce((acc, i) => acc + i[1], 0);
+                let r = this.nextFloat() * c;
+                for (var i = 0; i < pairs.length; i++) {
+                    const pair = pairs[i];
+                    if (pair[1] < r)
+                        r -= pair[1];
+                    else
+                        return pair[0];
+                }
+                return pairs[0][0]; // should be unreachable, if float err covers ass
+
             }
             pick(array) {
                 return array[this.next(0, array.length)];
+            }
+            nextFloat() {
+                return this.nextUInt() / 0xFFFFFFFF
             }
         }
         const sum = arr => arr.reduce((a, n) => a + parseFloat(n), 0);
@@ -98,9 +114,9 @@
                                         } else if (widget.plainText) {
                                             let newtxt = widget.plainText;
                                             if (metadata && metadata.diceRange) {
-                                                let roll = random.pick(metadata.diceRange);
+                                                let roll = random.weightedPick(Object.entries(metadata.diceRange));
                                                 newtxt = roll.toString();
-                                                rollSum += roll;
+                                                rollSum += parseInt(roll);
                                                 foundDice = true;
                                             } else {
                                                 [...widget.plainText.matchAll(/\*(.*?)\*/g)].forEach(match => {
