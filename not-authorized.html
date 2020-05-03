@@ -29,7 +29,7 @@
         document.querySelector('button').addEventListener('click', function() {
             const authorizeOptions = {
                 response_type: 'token',
-                redirect_uri: 'https://' + window.location.host + '/MiroDicePostIt/success.html'
+                redirect_uri: encodeURI('https://' + window.location.host + '/MiroDicePostIt/success.html')
             }
             miro.authorize(authorizeOptions)
                 .then(() => miro.getToken())
