@@ -29,7 +29,7 @@
                 if (index % 2 === 0)
                     result.push(array.slice(index, index + 2));
                 return result;
-            }, []).filter(i => i.length === 2).map(i => [string.slice(...i) + brackets[1], string.slice(...i).slice(1), i]);
+            }, []).filter(i => i.length === 2).map(i => [string.slice(...i) + brackets[1], decodeURI(string.slice(...i).slice(1)), i]);
         }
 
         class Random {
@@ -146,7 +146,7 @@
                                                 rollSum += parseInt(roll);
                                                 foundDice = true;
                                             } else {
-                                                matchBrackets(widget.plainText,"()").forEach(match => {
+                                                matchBrackets(widget.text,"()").forEach(match => {
                                                     let unformattedNotation = match[1].split(':')[0];
                                                     let diceNotation = diceVars.reduce((txt, dicevar) => { 
                                                         return dicevar.re(txt);
