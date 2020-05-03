@@ -72,22 +72,17 @@
         var random = new Random();
 
         function authorise() {
-            const authorizeOptions = {
-                response_type: 'token',
-                redirect_uri: 'https://' + window.location.host + '/success.html'
-            }
             return miro.isAuthorized().then(isauth => {
                 if (!isauth)
-                    return miro.authorize(authorizeOptions).then(() => miro.getToken())
-                        .then((token) => {
-                            if (token)
+                    return miro.board.ui.openModal('not-authorized.html')
+                        .then(response => {
+                            if (response === 'success') {
                                 return Promise.resolve();
-                            else
-                                return Promise.reject("auth fail");
+                            }
+                            return Promise.reject("auth fail");
                         });
                 return Promise.resolve();
             });
-
         }
         miro.onReady(() => {
             authorise().then(() => miro.initialize({
