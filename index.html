@@ -146,12 +146,13 @@
                                                 rollSum += parseInt(roll);
                                                 foundDice = true;
                                             } else {
-                                                matchBrackets(widget.text,"()").forEach(match => {
+                                                newtxt = widget.text;
+                                                matchBrackets(widget.text, "()").forEach(match => {
                                                     let unformattedNotation = match[1].split(':')[0];
-                                                    let diceNotation = diceVars.reduce((txt, dicevar) => { 
+                                                    let diceNotation = diceVars.reduce((txt, dicevar) => {
                                                         return dicevar.re(txt);
                                                     }, unformattedNotation);
-                                                    let unclamedVars = diceNotation.match(/#\w[\w\d]*/g)//check no # are left and gracefull err out if found
+                                                    let unclamedVars = diceNotation.match(/#\w[\w\d]*/g) //check no # are left and gracefull err out if found
                                                     if (unclamedVars && unclamedVars.length != 0)
                                                         newtxt = newtxt.replace(match[0], `(${unformattedNotation}: missing definitions ${unclamedVars})`);
                                                     else
