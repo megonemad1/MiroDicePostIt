@@ -148,7 +148,7 @@
                                         if (foundDice)
                                             return miro.showNotification(`Total: ${rollSum + sum(diceVars.map(dv=>dv.value))}`);
                                         return Promise.resolve();
-                                    });
+                                    }).then(() => miro.board.selection.clear());
                                 });
                             }
                         }
