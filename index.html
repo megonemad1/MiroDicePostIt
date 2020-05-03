@@ -8,6 +8,30 @@
         const icon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="height: 32px; width: 32px;"><path d="M0 0h512v512H0z" fill="#000" fill-opacity="0"></path><g class="" transform="translate(0,0)" style="touch-action: none;"><path d="M74.5 36A38.5 38.5 0 0 0 36 74.5v363A38.5 38.5 0 0 0 74.5 476h363a38.5 38.5 0 0 0 38.5-38.5v-363A38.5 38.5 0 0 0 437.5 36h-363zm48.97 36.03A50 50 0 0 1 172 122a50 50 0 0 1-100 0 50 50 0 0 1 51.47-49.97zm268 0A50 50 0 0 1 440 122a50 50 0 0 1-100 0 50 50 0 0 1 51.47-49.97zM122 206a50 50 0 0 1 0 100 50 50 0 0 1 0-100zm268 0a50 50 0 0 1 0 100 50 50 0 0 1 0-100zM123.47 340.03A50 50 0 0 1 172 390a50 50 0 0 1-100 0 50 50 0 0 1 51.47-49.97zm268 0A50 50 0 0 1 440 390a50 50 0 0 1-100 0 50 50 0 0 1 51.47-49.97z" fill="#000" fill-opacity="1"></path></g></svg>'
         const icon2 = '<circle cx="12" cy="12" r="9" fill="none" fill-rule="evenodd" stroke="currentColor" stroke-width="2"></circle>'
 
+        function matchBrackets(string, brackets) {
+            let nestLevel = 0;
+            let places = []
+            Object.entries(string).forEach(c => {
+                if (c[1] == brackets[0]) {
+                    if (nestLevel == 0) {
+                        places = places.concat(c[0])
+                    }
+                    nestLevel++;
+                } else if (c[1] == brackets[1]) {
+                    nestLevel--;
+                    if (nestLevel == 0) {
+                        places = places.concat(c[0])
+                    }
+                    nestLevel = Math.max(0, nestLevel);
+                }
+            });
+            return places.reduce(function(result, value, index, array) {
+                if (index % 2 === 0)
+                    result.push(array.slice(index, index + 2));
+                return result;
+            }, []).filter(i => i.length === 2).map(i => [string.slice(...i) + brackets[1], string.slice(...i).slice(1), i]);
+        }
+
         class Random {
             array = new Uint32Array(8192);
             i = 0;
@@ -122,20 +146,20 @@
                                                 rollSum += parseInt(roll);
                                                 foundDice = true;
                                             } else {
-                                                [...widget.plainText.matchAll(/\*(.*?)\*/g)].forEach(match => {
+                                                matchBrackets(widget.plainText,"()").forEach(match => {
                                                     let unformattedNotation = match[1].split(':')[0];
-                                                    let diceNotation = diceVars.reduce((txt, dicevar) => { //check no # are left and gracefull err out if found
+                                                    let diceNotation = diceVars.reduce((txt, dicevar) => { 
                                                         return dicevar.re(txt);
                                                     }, unformattedNotation);
-                                                    let unclamedVars = diceNotation.match(/#\w[\w\d]*/g)
+                                                    let unclamedVars = diceNotation.match(/#\w[\w\d]*/g)//check no # are left and gracefull err out if found
                                                     if (unclamedVars && unclamedVars.length != 0)
-                                                        newtxt = newtxt.replace(match[0], `*${unformattedNotation}: missing definitions ${unclamedVars}*`);
+                                                        newtxt = newtxt.replace(match[0], `(${unformattedNotation}: missing definitions ${unclamedVars})`);
                                                     else
                                                         try {
                                                             var r = roller.roll(diceNotation);
-                                                            newtxt = newtxt.replace(match[0], `*${unformattedNotation}:${r.output.split(':')[1]}*`);
+                                                            newtxt = newtxt.replace(match[0], `(${unformattedNotation}:${r.output.split(':')[1]})`);
                                                         } catch (error) {
-                                                            newtxt = newtxt.replace(match[0], `*${unformattedNotation}: ${error}*`);
+                                                            newtxt = newtxt.replace(match[0], `(${unformattedNotation}: ${error})`);
                                                         }
                                                 });
                                             }
