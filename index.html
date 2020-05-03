@@ -74,7 +74,7 @@
         function authorise() {
             const authorizeOptions = {
                 response_type: 'token',
-                redirect_uri: 'http://' + window.location
+                redirect_uri: 'https://' + window.location.host + '/success.html'
             }
             return miro.isAuthorized().then(isauth => {
                 if (!isauth)
