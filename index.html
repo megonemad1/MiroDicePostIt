@@ -142,7 +142,7 @@
                                             if (metadata && metadata.diceRange) {
                                                 let roll = random.weightedPick(Object.entries(metadata.diceRange));
                                                 newtxt = roll.toString();
-                                                if (percent-->0 && metadata.diceType && metadata.diceType == 10 && roll == 0)
+                                                if (percent--<=0 && metadata.diceType && metadata.diceType == 10 && roll == 0)
                                                     roll = 10;
                                                 rollSum += parseInt(roll);
                                                 foundDice = true;
