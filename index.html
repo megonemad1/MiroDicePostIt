@@ -107,7 +107,11 @@
                                 return Promise.all(widgets.map(w => miro.board.widgets.get({
                                     id: w.id
                                 }).then(w => w[0]))).then(widgets => {
+                                    let percent = false;
                                     let diceVars = widgets.reduce((vars, widget) => {
+                                            let meta = widget.meta[miro.getClientId()];
+                                            if (meta && meta.diceType && meta.diceType == 100)
+                                                percent = true;
                                             if (widget.plainText) {
                                                 return [...vars, ...widget.plainText.matchAll(/(\w[\w\d]*)=([\+\-]?\d+(?:\.\d+)?)/g)];
                                             }
@@ -138,6 +142,8 @@
                                             if (metadata && metadata.diceRange) {
                                                 let roll = random.weightedPick(Object.entries(metadata.diceRange));
                                                 newtxt = roll.toString();
+                                                if (!percent && metadata.diceType && metadata.diceType == 10 && roll == 0)
+                                                    roll = 10;
                                                 rollSum += parseInt(roll);
                                                 foundDice = true;
                                             } else {

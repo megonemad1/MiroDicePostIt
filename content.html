@@ -239,12 +239,13 @@
                     textColor: color1,
                     underline: 0,
                 },
-                metadata: {}
-            }
-            var meta = {
-                diceRange: makeDice(dice_type)
-            }
-            dice.metadata[miro.getClientId()] = meta
+                metadata: {
+                    [miro.getClientId()]: {
+                        diceRange: makeDice(dice_type),
+                        diceType:dice_type
+                    }
+                }
+            };
             return miro.board.widgets.create(dice)
         }
 
