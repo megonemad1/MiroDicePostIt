@@ -109,7 +109,7 @@
                                 }).then(w => w[0]))).then(widgets => {
                                     let percent = 0;
                                     let diceVars = widgets.reduce((vars, widget) => {
-                                            let meta = widget.meta[miro.getClientId()];
+                                            let meta = widget.metadata[miro.getClientId()];
                                             if (meta && meta.diceType && meta.diceType == 100)
                                                 percent++;
                                             if (widget.plainText) {
