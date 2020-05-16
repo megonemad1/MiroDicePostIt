@@ -12,3 +12,7 @@ dice can be draged on from the botom bar menu. using the context menu dice butto
 
 ## selection
 you can roll multiple dice by selecting multiple rollable widgets and using the context menu dice.
+
+## install
+im still a bit shaky on how the auth works, i think this is structured correctly
+https://miro.com/oauth/authorize?response_type=code&client_id=3074457347660787496&redirect_uri=https://megonemad1.github.io/MiroDicePostIt/success.html
